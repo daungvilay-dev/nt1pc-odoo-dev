@@ -14,3 +14,5 @@ from . import hr_leave_mandatory_day
 from . import mail_message_subtype
 from . import res_partner
 from . import res_users
+from . import hr_holidays_approvers_chain
+from . import hr_employee_holidays_approver

@@ -139,6 +139,7 @@ class HolidaysRequest(models.Model):
     user_id = fields.Many2one('res.users', string='User', related='employee_id.user_id', related_sudo=True, compute_sudo=True, store=True, readonly=True, index=True)
     manager_id = fields.Many2one('hr.employee', compute='_compute_from_employee_id', store=True, readonly=False)
     is_user_only_responsible = fields.Boolean(compute="_compute_is_user_only_responsible")
+    # testing_name = fields.Text('testing')
     # leave type configuration
     holiday_status_id = fields.Many2one(
         "hr.leave.type", compute='_compute_from_employee_id',
