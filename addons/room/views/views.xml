@@ -1,0 +1,73 @@
+<odoo>
+  <!-- <data> -->
+
+
+  <!-- Tree view -->
+  <record id="rm_room_tree_view" model="ir.ui.view">
+    <field name="name">rm.room.tree.view</field>
+    <field name="model">rm.room</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="id"/>
+        <field name="name"/>
+          <field name="room_number"/>
+        <!-- <field name="student_ids"/> -->
+      </tree>
+    </field>
+  </record>
+
+  <!-- Form view -->
+  <record id="rm_room_form_view" model="ir.ui.view">
+    <field name="name">rm.room.form.view</field>
+    <field name="model">rm.room</field>
+    <field name="arch" type="xml">
+      <form>
+       <group>
+       <group>
+        <field name="name"/>
+        <field name="room_number"/>
+        <field name="obj_room"/>
+        <!-- <field name="student_ids">
+                            <tree>
+                                <field name="name"/>
+                                <field name="student_lastname"/>
+                                <field name="student_identifier"/>
+                            </tree>
+         </field> -->
+        </group>
+        </group>
+      </form>
+    </field>
+  </record>
+
+    <!-- Top menu item -->
+
+    <!-- <menuitem name="room" id="room.menu_root"/> -->
+
+    <!-- menu categories -->
+<!-- 
+    <menuitem name="Room Menu 1" id="room.menu_1" parent="room.menu_root"/>
+    <menuitem name="Room Menu 2" id="room.menu_2" parent="room.menu_root"/> -->
+
+    <!-- actions -->
+
+    <!-- <menuitem name="Room List" id="room.menu_1_list" parent="room.menu_1"
+              action="room.action_window"/>
+    <menuitem name="Rome to list" id="room" parent="room.menu_2"
+              action="room.action_server"/> -->
+
+
+  <!-- Actions opening views on models -->
+  <record model="ir.actions.act_window" id="rm_room_action">
+    <field name="name">Rooms</field>
+    <field name="res_model">rm.room</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <!-- Menu -->
+  <menuitem name="Rooms 1" id="rm_room_menu_root"/>
+  <menuitem name="Rooms" id="rm_room_sub_menu_root" parent="rm_room_menu_root"/>
+  <menuitem name="Rooms List" id="rm_room_menu_student_list" parent="rm_room_sub_menu_root" action="rm_room_action"/>
+
+  <!-- </data> -->
+</odoo>

@@ -292,6 +292,5 @@
         <field name="perm_unlink" eval="False"/>
         <field name="groups" eval="[(4, ref('hr_holidays.group_hr_holidays_user'))]"/>
     </record>
-
     </data>
 </odoo>
