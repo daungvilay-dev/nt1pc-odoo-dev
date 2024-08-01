@@ -72,10 +72,30 @@ class HolidaysRequest(models.Model):
     _inherit = ['mail.thread.main.attachment', 'mail.activity.mixin']
     _mail_post_access = 'read'
 
+
+    @api.model
+    def init(self):
+        super(HolidaysRequest, self).init()
+        self._print_time_off_details()
+        self._onMounted()
+    
+    def _print_time_off_details(self):
+        # Query some details you want to print
+        time_off_records = self.search([], limit=10)  # Example: limit to 10 records
+        for record in time_off_records:
+            print(f"Time Off: {record.name}, Start Date: {record.date_from}, End Date: {record.date_to}")
+
+    @api.model
+    def _onMounted(self):
+        print("onMounted")
+      
     @api.model
     def default_get(self, fields_list):
         defaults = super(HolidaysRequest, self).default_get(fields_list)
         defaults = self._default_get_request_dates(defaults)
+        print("on printing Hr leave request")
+        
+        
 
         lt = self.env['hr.leave.type']
         if self.env.context.get('holiday_status_display_name', True) and 'holiday_status_id' in fields_list and not defaults.get('holiday_status_id'):
@@ -95,6 +115,13 @@ class HolidaysRequest(models.Model):
         return defaults
 
     def _default_get_request_dates(self, values):
+        print("on printing Hr __default_get_request_dates")
+        for leave in self:
+            print(leave.employee_id)
+            if leave.employee_id:
+                leave.holidays_approvers = leave.employee_id.sudo().holidays_approvers
+            else:
+                leave.holidays_approvers = False
         # The UI views initialize date_{from,to} due to how calendar views work.
         # However it is request_date_{from,to} that should be used instead.
         # Instead of overwriting all the javascript methods to use
@@ -118,11 +145,36 @@ class HolidaysRequest(models.Model):
                 values['request_date_to'] = pytz.utc.localize(values['date_to']).astimezone(client_tz)
             del values['date_to']
         return values
+    
+    def _default_approver(self):
+        employee = self.employee_id
+        print(self.employee_id)
+        if employee and employee.holidays_approvers:
+            print(employee)
+            return employee.holidays_approvers[0].approver.id
 
     active = fields.Boolean(default=True, readonly=True)
     # description
     name = fields.Char('Description', compute='_compute_description', inverse='_inverse_description', search='_search_description', compute_sudo=False, copy=False)
     private_name = fields.Char('Time Off Description', groups='hr_holidays.group_hr_holidays_user')
+
+
+    #custom approval for dev
+    current_approver_id = fields.Many2one('hr.employee', string="Current Approval", readonly=True)
+    approver_ids = fields.One2many('hr.leave.approver', 'leave_id', string="Approvers",)
+  
+    pending_approver = fields.Many2one('hr.employee', string="Pending Approver", readonly=True, default=_default_approver)
+    pending_approver_user = fields.Many2one('res.users', string='Pending approver user', related='pending_approver.user_id', readonly=True)
+
+    holidays_approvers = fields.One2many(
+        comodel_name='hr.employee.holidays.approver',
+        inverse_name='employee',
+        string='Approvers Chains',
+        compute='_compute_holidays_approvers',
+        store=False,
+        readonly=True,
+    )
+
     state = fields.Selection(
         [
             ('draft', 'To Submit'),
@@ -328,6 +380,10 @@ class HolidaysRequest(models.Model):
         for leave in self:
             leave.all_employee_ids = leave.employee_id | leave.employee_ids
 
+    @api.depends('employee_id')
+    def _compute_holidays_approvers(self):
+        for leave in self:
+            leave.holidays_approvers = leave.employee_id.holidays_approvers
     @api.depends_context('uid')
     def _compute_description(self):
         self.check_access_rights('read')
@@ -914,8 +970,31 @@ Attempting to double-book your time off won't magically make your vacation 2x be
             # Is probably handled via ir.rule
             raise AccessError(_('You don\'t have the rights to apply second approval on a time off request'))
 
+
+    def _set_initial_approver(self):
+        print("_set_initial_approver")
+        for leave in self:
+            # Get the list of approvers for the employee's leave
+            approvers = leave.employee_id.holidays_approvers.sorted('sequence')
+            if approvers:
+                print(approvers)
+                # Set the first approver as the current approver
+                # leave.current_approver_id =  approvers[0].approver_id.id
+                leave.current_approver_id =  approvers[0].approver.id
+                # Create approver records for the leave request
+                for approver in approvers:
+                    print("approver", approver)
+                    self.env['hr.leave.approver'].create({
+                        'leave_id': leave.id,
+                        'employee_id': approver.approver.id,
+                        'sequence': approver.sequence,
+                        'status': 'pending',
+                    })
+
+                    
     @api.model_create_multi
     def create(self, vals_list):
+        print("on create time off")
         employee_ids = []
         for values in vals_list:
             if values.get('employee_id'):
@@ -949,6 +1028,9 @@ Attempting to double-book your time off won't magically make your vacation 2x be
         holidays = super(HolidaysRequest, self.with_context(mail_create_nosubscribe=True)).create(vals_list)
         holidays._check_validity()
 
+        # Set the initial approvers for the leave requests
+        holidays._set_initial_approver()
+
         for holiday in holidays:
             if not self._context.get('leave_fast_create'):
                 # Everything that is done here must be done using sudo because we might
@@ -966,6 +1048,7 @@ Attempting to double-book your time off won't magically make your vacation 2x be
                     holiday_sudo.message_post(body=_("The time off has been automatically approved"), subtype_xmlid="mail.mt_comment") # Message from OdooBot (sudo)
                 elif not self._context.get('import_file'):
                     holiday_sudo.activity_update()
+        
         return holidays
 
     def write(self, values):
@@ -1210,19 +1293,41 @@ Attempting to double-book your time off won't magically make your vacation 2x be
         return True
 
     def action_approve(self, check_state=True):
-        # if validation_type == 'both': this method is the first approval approval
-        # if validation_type != 'both': this method calls action_validate() below
+        # # if validation_type == 'both': this method is the first approval approval
+        # # if validation_type != 'both': this method calls action_validate() below
 
-        # Do not check the state in case we are redirected from the dashboard
-        if check_state and any(holiday.state != 'confirm' for holiday in self):
-            raise UserError(_('Time off request must be confirmed ("To Approve") in order to approve it.'))
+        # # Do not check the state in case we are redirected from the dashboard
+        # if check_state and any(holiday.state != 'confirm' for holiday in self):
+        #     raise UserError(_('Time off request must be confirmed ("To Approve") in order to approve it.'))
 
+        # current_employee = self.env.user.employee_id
+        # self.filtered(lambda hol: hol.validation_type == 'both').write({'state': 'validate1', 'first_approver_id': current_employee.id})
+
+        # self.filtered(lambda hol: not hol.validation_type == 'both').action_validate()
         current_employee = self.env.user.employee_id
-        self.filtered(lambda hol: hol.validation_type == 'both').write({'state': 'validate1', 'first_approver_id': current_employee.id})
-
-        self.filtered(lambda hol: not hol.validation_type == 'both').action_validate()
+        
+        
+        # i want to make thi
+        print(f'current_employee {current_employee}')
         if not self.env.context.get('leave_fast_create'):
-            self.activity_update()
+            self.activity_update() 
+        for holiday in self:
+            is_last_approbation = False
+            sequence = 0
+            next_approver = None
+            print("action_approve")
+            print(holiday.employee_id.holidays_approvers)
+            for approver in holiday.employee_id.holidays_approvers:
+                 sequence += 1
+                 print(approver)
+                 print(holiday.pending_approver.id)
+                 print(approver.approver.id)
+                 if holiday.pending_approver.id == approver.approver.id:
+                    print(f'teting {holiday.pending_approver.id == approver.approver.id}')
+                    if sequence == len(holiday.employee_id.holidays_approvers):
+                        is_last_approbation = True
+                    else: 
+                        next_approver = holiday.employee_id.holidays_approvers[sequence].approver
         return True
 
     def _get_leaves_on_public_holiday(self):

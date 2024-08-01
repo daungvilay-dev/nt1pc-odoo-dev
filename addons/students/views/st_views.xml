@@ -1,0 +1,83 @@
+<odoo>
+  <!-- Data -->
+
+  <!-- Tree view -->
+  <record id="st_students_tree_view" model="ir.ui.view">
+    <field name="name">st.students.tree.view</field>
+    <field name="model">st.students</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="name" string="Name"/>
+        <field name="student_fees" string="Student Fees"/>
+        <field name="discount"/>
+        <field name="final_fees"/>
+      </tree>
+    </field>
+  </record>
+
+  <!-- Form view -->
+  
+  <record id="st_students_form_view" model="ir.ui.view">
+    <field name="name">st.students.form.view</field>
+    <field name="model">st.students</field>
+    <field name="arch" type="xml">
+      <form>
+       <group>
+        <button name="student_data_json" type="object" string="Add Json" />
+       <group>
+        <field name="hobby_list" widget= "many2many_tags" />
+        <field name="student_data"/>
+        <field name="student_fees"/>
+        <field name="discount"/>
+         <field name="final_fees" force_save="1" />
+        <field name="room_ids"/>
+        <field name="friend_ids" /> 
+        <field name="joining_date"/>  
+        <field name="start_date"/>
+        <field name="end_date"/>
+        <field name="duration_days"/>
+        <field name="datetime"/>
+        <field name="name"/>
+        <field name="roll_namber"/>
+        <field name="gender"/>
+        <field name="advance_gender"/>
+        <field name="advance_gender_vip"/>
+        <field name="value"/>
+        <field name="value2"/>
+        <field name="description"/>
+        <field name="student_lastname"/>
+        <field name="student_identifier"/>
+        </group>
+        </group>
+      </form>
+    </field>
+  </record>
+
+  <!-- Actions opening views on models -->
+  <record model="ir.actions.act_window" id="st_students_action">
+    <field name="name">Students</field>
+    <field name="res_model">st.students</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+
+
+  <record model="ir.actions.act_window" id="st_friends_action">
+    <field name="name">Friends</field>
+    <field name="res_model">st.friends</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <!-- Menu -->
+  <menuitem name="Students" id="st_students_menu_root"/>
+  <menuitem name="Room" id="st_students_sub_menu_root" parent="st_students_menu_root"/>
+
+
+  <menuitem name="List Main" id="st_students_list_sub_menu_root" parent="st_students_menu_root"  action="st_students_action"/>
+
+
+
+  <menuitem name="Student List" id="st_students_menu_student_list" parent="st_students_sub_menu_root" action="st_students_action"/>
+  <menuitem name="Friend List" id="st_friend_menu_friend_list" parent="st_students_sub_menu_root" action="st_friends_action"/>
+
+</odoo>

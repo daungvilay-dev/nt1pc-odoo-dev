@@ -1,0 +1,35 @@
+<odoo>
+  <!-- Data -->
+
+  <!-- Tree view -->
+  <record id="st_friends_tree_view" model="ir.ui.view">
+    <field name="name">st.friends.tree.view</field>
+    <field name="model">st.friends</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="name"/>
+        <field name="age"/>
+        <!-- <field name="student_ids"/> -->
+      </tree>
+    </field>
+  </record>
+
+  <!-- Form view -->
+  <record id="st_friends_form_view" model="ir.ui.view">
+    <field name="name">st.friends.form.view</field>
+    <field name="model">st.friends</field>
+    <field name="arch" type="xml">
+      <form>
+       <group>
+       <group>
+        <field name="name"/>
+        <field name="age"/>
+        <!-- <field name="student_ids" /> -->
+        </group>
+        </group>
+      </form>
+    </field>
+  </record>
+
+  <!-- Actions opening views on models -->
+</odoo>
