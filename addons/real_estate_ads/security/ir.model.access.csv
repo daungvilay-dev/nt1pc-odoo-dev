@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_estate_property,Real Estate Poperty,model_estate_property,base.group_user,1,1,1,1
+access_estate_property_type,Real Estate Poperty Type,model_estate_property_type,base.group_user,1,1,1,1
+access_estate_property_tag,Real Estate Poperty Tag,model_estate_property_tag,base.group_user,1,0,0,0
+access_estate_property_offer,Real Estate Poperty Offers,model_estate_property_offer,base.group_user,1,1,1,1
+access_offer_price_update_wizard,Real Estate Poperty Offers Update Price,model_offer_price_update_wizard,base.group_user,1,1,1,1

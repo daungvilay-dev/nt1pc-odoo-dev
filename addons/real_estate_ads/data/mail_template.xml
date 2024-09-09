@@ -1,0 +1,30 @@
+<odoo>
+    <data>
+        <!-- Mail template for new property listing -->
+        <record id="email_template_new_property_listing" model="mail.template">
+            <field name="name">New Property Listing</field>
+            <field name="model_id" ref="real_estate_ads.model_estate_property"/>
+            <field name="subject">New Property Listed: {{object.name}}</field>
+            <field name="email_from">dangvilay.dev@gmail.com</field>
+            <field name="email_to">{{object.email_recipients}}</field>
+            <field name="body_html" type="html">
+       
+                <p>Dear {{object.partner_id.name}},</p>
+                <p>We are excited to inform you about a new property listing:</p>
+                <p><strong>Property Details:</strong></p>
+                <ul>
+                    <li><strong>Property Name:</strong> {{object.name}}</li>
+                    <li><strong>Property Type:</strong> {{object.property_type_id.name}}</li>
+                    <li><strong>Location:</strong> {{object.location}}</li>
+                    <li><strong>Price:</strong> {{object.price}}</li>
+                    <li><strong>Description:</strong> {{object.description}}</li>
+                </ul>
+                <p>For more details, please visit our website or contact us directly.</p>
+                <p>Best regards,</p>
+                <p>Your Company</p>
+            
+            </field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

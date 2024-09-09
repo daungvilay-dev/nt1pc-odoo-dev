@@ -160,7 +160,7 @@ class HolidaysRequest(models.Model):
 
 
     #custom approval for dev
-    current_approver_id = fields.Many2one('hr.employee', string="Current Approval", readonly=True)
+    # current_approver_id = fields.Many2one('hr.employee', string="Current Approval", readonly=True)
     approver_ids = fields.One2many('hr.leave.approver', 'leave_id', string="Approvers",)
   
     pending_approver = fields.Many2one('hr.employee', string="Pending Approver", readonly=True, default=_default_approver)
@@ -980,7 +980,7 @@ Attempting to double-book your time off won't magically make your vacation 2x be
                 print(approvers)
                 # Set the first approver as the current approver
                 # leave.current_approver_id =  approvers[0].approver_id.id
-                leave.current_approver_id =  approvers[0].approver.id
+                # leave.current_approver_id =  approvers[0].approver.id
                 # Create approver records for the leave request
                 for approver in approvers:
                     print("approver", approver)

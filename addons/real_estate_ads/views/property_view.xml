@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+ <data>
+  
+  <!-- create tree view for  display on table estate property -->
+  <record id='estate_property_tree_view' model='ir.ui.view'>
+    <field name='name'>estate.property.tree</field>
+    <field name='model'>estate.property</field>
+    <field name='arch' type='xml'>
+     <tree>
+        <field name='name'></field>
+        <field name='type_id'></field>
+        <field name='section_type'></field>
+        <field name='price'></field>
+        <field name='date_available_from'></field>
+        <field name='state' widget='badge'></field>
+     </tree>
+    </field>
+  </record>
+
+
+  <!-- create tree view for  [ search and filter ] data on table estate property -->
+  <record id='estate_property_search_view' model='ir.ui.view'>
+    <field name='name'>estate.property.search</field>
+    <field name='model'>estate.property</field>
+    <field name='arch' type='xml'>
+     <search>
+        <field name='name'></field>
+        <field name='type_id'></field>
+        <field name='section_type'></field>
+        <field name='price'></field>
+        <field name='date_available_from'></field>
+        <field name='state' widget='badge'></field>
+
+        <!-- #set default filter -->
+        <filter name="filter_sold" string="Sold" domain="[('state', '=', 'sold')]" /> 
+        <filter name="filter_new" string="New" domain="[('state', '=', 'new')]" /> 
+        <separator></separator>
+        <filter name="filter_received" string="Received" domain="[('state', '=', 'received')]" />
+        <filter name="filter_offer" string="Offer" domain="[('state', '=', 'offer')]" />
+
+            <!-- #set default Group -->
+
+        <group string="Group By">
+          <filter name="group_by_type" string="Type" context="{'group_by':'type_id'}"/>
+          <filter name="group_by_section" string="Section" context="{'group_by':'section_type'}"/>
+          <filter name="group_by_state" string="State" context="{'group_by':'state'}"/>
+        </group>
+
+      <!-- #set searchpanel -->  
+       <searchpanel>
+          <field name='state' icon='fa-filter' groupby='group_by_state' limit='0' ></field>
+       </searchpanel>
+     </search>
+    </field>
+  </record>
+
+  <!-- create tree view for [ kanban ] data on estate property -->
+  <record id='estate_property_kanban_view' model='ir.ui.view'>
+    <field name='name'>estate.property.kanban</field>
+    <field name='model'>estate.property</field>
+    <field name='arch' type='xml'>
+
+  
+    <kanban default_group_by='state' on_create_="quick_create" >
+      <!-- <kanban default_group_by='state' > -->
+       <template>
+          <t t-name="kanban-box">
+           <!-- <div class="oe_kanban_global_click"> this one for click link to original form value -->
+                <div class="oe_kanban_global_click">
+                  <div class='oe_kanban_details'>
+                        <strong class="o_kanban_record_title">
+                            <field name='name'></field>
+                        </strong>
+                        <div class="o_kanban_tags_section">
+                          <field name='tag_ids' widget='many2many_tags' options="{'color_field':'color'}"></field>
+                        </div>
+                          <div class='o_kanban_record_bottom'>
+                            <div class='o_kanban_record_left'>
+                                <field name='offer_count'/> Offer(s)
+                              </div>
+                          </div>
+                    </div>
+                </div>  
+          </t>
+       </template>
+    </kanban>
+    </field>
+  </record>
+
+  <!-- create tree view for [ pivot ] data on  estate property -->
+  <record id='estate_property_pivot_view' model='ir.ui.view'>
+    <field name='name'>estate.property.pivot</field>
+    <field name='model'>estate.property</field>
+    <field name='arch' type='xml'>
+      <pivot>
+          <field name='name' type='row'></field>
+          <field name='price' type='measure'></field>
+          <field name='expected_price' type='measure'></field>
+          <field name='best_offer' type='measure'></field>
+          <field name='bedrooms' type='measure'></field>
+          <field name='bathrooms' type='measure'></field>
+          <field name='date_available_from' type='row'></field>
+          <field name='state' type='col'></field>
+      </pivot>
+      </field>
+    </record>
+
+  <!-- create tree view for [ graph ] data on  estate property -->
+  <record id='estate_property_graph_view' model='ir.ui.view'>
+    <field name='name'>estate.property.graph</field>
+    <field name='model'>estate.property</field>
+    <field name='arch' type='xml'>
+        <graph>
+            <field name='name'></field>
+            <field name='price' type='measure'></field>
+        </graph>
+      </field>
+    </record>
+  
+  
+  <!-- create tree view for [ gantt ] data on  estate property -->
+  <!-- note [gantt work only enterpire] -->
+  <record id='estate_property_gantt_view' model='ir.ui.view'>
+    <field name='name'>estate.property.gantt</field>
+    <field name='model'>estate.property</field>
+    <field name='arch' type='xml'>
+        <gantt date_start="date_available_from" date_stop="deadline" default_group_by="partner_id">
+            <field name="name"/>
+        </gantt>
+    </field>
+  </record>
+
+
+  <!-- create tree view for [ calendar ] data on  estate property -->
+  <record id='estate_property_calendar_view' model='ir.ui.view'>
+    <field name='name'>estate.property.calendar</field>
+    <field name='model'>estate.property</field>
+    <field name='arch' type='xml'>
+        <calendar date_start="date_available_from"  string='Propertity' mode="month" event_open_popup="True">
+            <field name="name"/>
+            <field name="date_available_from"/>
+             <field name='price'></field>
+        </calendar>
+    </field>
+  </record>
+
+
+
+  
+  
+    <!-- create [ form ] estate property -->
+    <record id='estate_property_form_view' model='ir.ui.view'>
+      <field name='name'>estate.property.form</field>
+      <field name='model'>estate.property</field>
+      <field name='arch' type='xml'>
+        <form>
+          <header>
+            <button name='action_sold'  string="Sold" type="object" class="oe_highlight" />
+            <button name='action_sold'  string="Sold" type="object" class="btn btn-primary" />
+            <button name='action_cancel'  string="Cancel" type="object" class="btn btn-danger"  />
+            <button name='action_send_mail'  string="Send Mail" type="object" class="btn btn-primary" />
+
+
+              <!-- <field name='state' widget='statusbar' statusbar_visible="new,received"></field> -->
+              <field name='state' widget='statusbar'></field>
+          </header>
+          <sheet>
+              <div class="oe_button_box" name="button_box">
+                <button name="%(real_estate_ads.action_property_view_offers)d"  icon='fa-handshake-o' type="action" class="oe_stat_button">
+                      <field name="offer_count" string="Offer " widget="statinfo"/>
+                </button>
+                <button name="action_client_action"  icon='fa-handshake-o' type="object" class="oe_stat_button">
+                    action
+                </button>
+              </div>
+            <group>
+                <field name='name' placeholder='name here' widget='char_emojis'></field>
+                <field name='tag_ids' widget="many2many_tags" placeholder='tag here' options="{'color_field' :'color'}"></field>
+              <group>
+                <field name='section_type' widget='selection_badge' placeholder='type here'></field>
+                <field name='type_id'></field>
+                <field name='bedrooms'></field>
+                <field name='bathrooms'></field>
+                <field name='area' invisible="section_type == 'apartment'" readonly="{'invisible': [('section_type', '!=', 'land')]}" ></field>
+                <field name='location' string='Pasword' password="True"></field>
+              </group>
+              <group>
+                <field name='price'></field>
+                <field name='expected_price'></field>
+                <field name='best_offer'></field>
+                <field name='selling_price'></field>
+                <field name='date_available_from'></field>
+                <field name='total_b_room'></field>
+              </group>
+              <notebook>
+                <page string="Description">
+                  <field name='description' placeholder='write discription here.....' ></field>
+                  <field name='garage' widget='boolean_toggle' ></field>
+                  <field name='expected_price' invisible="garage==True"></field>
+                  <field name='best_offer' invisible="garage==True"></field>
+                </page>
+                <page string="Offers">
+                  <field name='offer_ids'>
+                    <tree editable='bottom' decoration-success="status == 'accepted'" decoration-danger="status == 'refused'">
+                      <field name='price' width='100' ></field>
+                      <field name='status' width='100' readonly='1'></field>
+                      <field name='partner_id' width='100' ></field>
+                      <field name='validity' width='100' ></field>
+                      <field name='create_date' width='100' ></field>
+                      <field name='dateline' width='100' widget='remaining_days' ></field>
+                      <button name='action_accept_offer'  icon='fa-check' type="object" string="Accept"></button>
+                      <button name='action_decline_offer'  icon='fa-times' type="object" string="Decline"></button>
+                    </tree>
+                  </field>
+                </page>
+                <page string="Other info">
+                  <field name='sale_id' widget='many2one_avatar_user'  placeholder='Saleman Standby'></field>
+                  <field name='buyer_id' placeholder='Supper buyer cursor'></field>
+                  <field name='buyer_phone'></field>
+                </page>
+              </notebook>
+            </group>
+          </sheet>
+
+          <!-- this one for chat mail message -->
+          <div class="oe_chatter">
+            <field name="message_follower_ids" widget="mail_followers"/>
+
+               <!-- [mail_activity] this one for set mail activity schedule -->
+            <field name="activity_ids" widget="mail_activity"/>
+            <field name="message_ids" widget="mail_thread"/>
+          </div>
+
+
+        </form>
+      </field>
+    </record>
+
+
+  <!-- show empty when table is empty on table and main page here-->
+  <record id='action_property' model="ir.actions.act_window">
+    <field name="name">Property</field>
+    <field name="res_model">estate.property</field>
+    <field name="view_mode">tree,kanban,pivot,graph,calendar,gantt,form</field>
+    <field name="view_id" ref='estate_property_tree_view'></field>
+    <field name="help" type="html">
+        <p class='o_view_nocontent_smiling_face' >
+        create new property
+        </p>
+     </field>
+  </record>
+
+
+  <!-- show action custom pages-->
+  <!-- this id use one menu_items  -->
+  <record id='action_custom_client_action' model="ir.actions.client">
+    <field name="name">Custom Client Action</field>
+    <field name="tag">custom_client_action</field>
+  </record>
+
+
+
+  <!-- show action when we can to action some thinng like [when we select filed we will see button delete on action]-->
+  <!-- this id use one menu_items  -->
+   <!-- model_estate_property_offer get from  [./ir.model.access.csv  model_id 'model_estate_property_offer'] this one -->
+   <!-- this id [action_extend_offer_deadline] for use in the function model 'property_offer' -->
+  <record id='action_extend_offer_deadline' model="ir.actions.server">
+    <field name="name">Extend Deadline</field>
+    <field name="model_id" ref="real_estate_ads.model_estate_property_offer"/>
+    <field name="state">code</field>
+    <field name="binding_model_id" ref="real_estate_ads.model_estate_property_offer" />
+    <field name="binding_view_types">list,form</field>
+
+    <field name="code">
+        action =model.extend_offer_deadline()
+     </field>
+  </record>
+
+  <record id='ir_cron_extend_offer_headlin' model="ir.cron">
+    <field name="name">Offer: Extend Deadline Everyday</field>
+    <field name="model_id" ref="real_estate_ads.model_estate_property_offer"/>
+    <field name="state">code</field>
+    <field name="code">model._extend_offer_deadline()</field>
+    <field name="interval_number">1</field>
+    <field name="interval_type">days</field>
+    <field name="numbercall">-1</field>
+  </record>
+
+
+
+
+    <record id="action_id" model="ir.actions.act_window">
+    <field name="name">Property</field>
+    <field name="res_model">estate.property</field>
+    <field name="view_mode">form</field>
+    <field name="target">current</field>
+  </record>
+
+
+
+  <record id='action_property_view_offers' model="ir.actions.act_window">
+    <field name="name">Property</field>
+    <field name="res_model">estate.property.offer</field>
+    <field name="view_mode">tree,form</field>
+    <field name='domain'>[('property_id', '=' , active_id)]</field>
+  </record>
+
+
+    <!-- create small form for create kanban  estate property -->
+  <!-- <record id='quik_create_estate_property_form_view' model='ir.ui.view'>
+    <field name='name'>estate.property.form</field>
+    <field name='model'>estate.property</field>
+    <field name='arch' type='xml'>
+       <form>
+         <group>
+              <field name='name' placeholder='name here' widget='char_emojis'></field>
+          </group>
+       </form>
+  </record>    -->
+
+
+
+
+ 
+
+
+ </data>
+</odoo>
