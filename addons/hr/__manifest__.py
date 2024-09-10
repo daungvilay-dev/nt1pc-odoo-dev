@@ -39,6 +39,7 @@
         'views/discuss_channel_views.xml',
         'views/res_users.xml',
         'views/hr_templates.xml',
+        'views/hr_extend.xml',
         'data/hr_data.xml',
     ],
     'demo': [

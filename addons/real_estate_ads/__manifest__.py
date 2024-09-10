@@ -14,7 +14,7 @@
         'security/res_groups.xml',
         'security/model_access.xml',
         'security/ir_rule.xml',
-        
+         'data/property_offer_action.xml',
         
         'views/property_view.xml',
         'views/property_type_view.xml',

@@ -89,6 +89,7 @@
                             <group>
                                 <field name="mobile_phone" widget="phone"/>
                                 <field name="work_phone" widget="phone"/>
+                                <field name="work_phone_one" widget="phone"/>
                                 <field name="work_email" widget="email"/>
                                 <field name="company_id" groups="base.group_multi_company"/>
                                 <field name="company_country_id" invisible="1"/>
@@ -441,6 +442,20 @@
                 </p>
             </field>
         </record>
+
+
+
+        <record id="view_employee_form_inherit" model="ir.ui.view">
+    <field name="name">hr.employee.public.form.inherit</field>
+    <field name="model">hr.employee.public</field>
+    <field name="inherit_id" ref="module_name.view_employee_form"/>
+    <field name="arch" type="xml">
+        <!-- Adding the new field after the existing work_phone field -->
+        <xpath expr="//field[@name='work_phone']" position="after">
+            <field name="work_phone_one"/>
+        </xpath>
+    </field>
+</record>
 
     </data>
 </odoo>

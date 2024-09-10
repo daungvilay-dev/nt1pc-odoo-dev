@@ -69,6 +69,7 @@
                             <group>
                                 <field name="mobile_phone" widget="phone"/>
                                 <field name="work_phone" widget="phone"/>
+                                <field name="work_phone_one" widget="phone"/>
                                 <field name="work_email" widget="email"/>
                             </group>
                             <group>
