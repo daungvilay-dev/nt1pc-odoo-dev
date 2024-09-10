@@ -1,0 +1,31 @@
+<odoo>
+
+
+       <!-- [ this one for hidde all menu for user who can manage their own property ]-->
+       <record id="real_estate_ads.access_estate_property_type" model="ir.model.access">
+           <!-- group_property_manager get from  [./res_groups.xml  id 'group_property_manager'] this one -->
+           <field name='group_id' ref="real_estate_ads.group_property_manager"></field>
+           
+       </record>
+       <!-- <record id="real_estate_ads.access_estate_property_tag" model="ir.model.access">
+           group_property_manager get from  [./res_groups.xml  id 'group_property_manager'] this one
+           <field name='group_id' ref="real_estate_ads.group_property_manager"></field>
+       </record> -->
+
+       <!-- [ this one for hidde method create ,read update delete ]-->
+       <record id="access_estate_property_tag_user" model="ir.model.access">
+           <field name='name'>Property tag access for user</field>
+
+           <!-- model_estate_property_tag get from  [./ir.model.access.csv  model_id 'model_estate_property_tag'] this one -->
+           <field name='model_id' ref="model_estate_property_tag" />
+
+           <!-- group_property_user get from  [./res_groups.xml  id 'group_property_user'] this one -->
+           <field name='group_id' ref="real_estate_ads.group_property_user" />
+            <field name="perm_read">1</field>
+            <field name="perm_create">0</field>
+            <field name="perm_write">0</field>
+            <field name="perm_unlink">0</field>  
+       </record>
+
+
+</odoo>

@@ -1,0 +1,23 @@
+<odoo>
+    <record id="module_category_real_estate" model="ir.module.category">
+        <field name="name">Real estate Property</field>
+        <field name="description">Module for real estate property and offer </field>
+        <field name="sequence">50</field>
+    </record>
+
+      <!-- this one is for the user who can manage their own property -->
+       <record id="group_property_user" model="res.groups">
+           <field name='name'>User: Manage own property</field>
+           <field name='category_id' ref="real_estate_ads.module_category_real_estate"></field>
+           <field name='implied_ids' eval="[(4, ref('base.group_user'))]"></field>
+           <field name='users' eval="[Command.link(ref('base.user_demo'))]"></field>
+       </record>
+
+      <!-- this one for the user who can manage all property -->
+       <record id="group_property_manager" model="res.groups">
+           <field name='name'>Manager: Manager all properties</field>
+           <field name='category_id' ref="real_estate_ads.module_category_real_estate"></field>
+           <field name='implied_ids' eval="[(4, ref('real_estate_ads.group_property_user'))]"></field>
+           <field name='users' eval="[(4, ref('base.user_admin'))]"></field>
+       </record>
+</odoo>

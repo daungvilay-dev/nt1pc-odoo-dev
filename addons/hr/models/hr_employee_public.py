@@ -22,6 +22,7 @@ class HrEmployeePublic(models.Model):
     company_id = fields.Many2one(readonly=True)
     address_id = fields.Many2one(readonly=True)
     mobile_phone = fields.Char(readonly=True)
+    work_phone_one = fields.Char(readonly=True)
     work_phone = fields.Char(readonly=True)
     work_email = fields.Char(readonly=True)
     work_contact_id = fields.Many2one(readonly=True)

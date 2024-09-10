@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+ <data>
+  
+  <!-- create tree view for  display on table estate property -->
+  <record id='estate_property_tag_tree_view' model='ir.ui.view'>
+    <field name='name'>estate.property.tag.tree</field>
+    <field name='model'>estate.property.tag</field>
+    <field name='arch' type='xml'>
+     <tree>
+        <field name='name'></field>
+        <!-- <field name='color' widget='color_picker'></field> -->
+     </tree>
+    </field>
+    
+  </record>
+
+
+
+  <!-- create group form display estate property -->
+  <record id='estate_property_tag_form_view' model='ir.ui.view'>
+    <field name='name'>estate.property.tag.form</field>
+    <field name='model'>estate.property.tag</field>
+    <field name='arch' type='xml'>
+       <form>
+        <sheet>
+          <group>
+              <field name='name'></field>
+              <field name='color' widget='color_picker'></field>
+          </group>
+        </sheet>
+       </form>
+    </field>
+  </record>
+
+
+  <!-- show empty when table is empty on table-->
+  <record id='action_property_tag' model="ir.actions.act_window">
+    <field name="name">Property Tag</field>
+    <field name="res_model">estate.property.tag</field>
+    <field name="view_mode">tree,form</field>
+    <field name="view_id" ref='estate_property_tag_tree_view'></field>
+    <field name="help" type="html">
+        <p class='o_view_nocontent_smiling_face' >
+           Create the first property tags
+        </p>
+     </field>
+  </record>
+ </data>
+</odoo>
